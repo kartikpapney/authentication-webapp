@@ -1,0 +1,46 @@
+version: '3.4'
+
+services:
+  mysqldb:
+    image: mysql:5.7.29
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_PORT: 3306
+      MYSQL_HOST: mysqldb
+      MYSQL_ROOT_PASSWORD: password
+
+
+  be:
+    image: authenticationservicebe
+    depends_on:
+      - mysqldb
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    environment:
+      PORT: 3001
+      JWT_SECRET: Yooi3u4587ADSFo38dfsaj43#%898asdflkj
+      DB_HOST: mysqldb
+      DB_PORT: 3306
+      DB_USERNAME: user
+      DB_PASSWORD: password
+      DB_DATABASE: db
+    ports:
+      - 3001:3001
+   
+
+  fe:
+    image: authenticationservicefe
+    depends_on:
+      - be
+    build:
+      context: ./client/
+      dockerfile: Dockerfile
+    environment:
+      REACT_APP_API_KEY: http://localhost:3001/api
+    ports:
+      - 3000:3000
+    
+  
